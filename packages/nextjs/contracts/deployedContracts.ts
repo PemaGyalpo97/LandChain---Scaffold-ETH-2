@@ -6,14 +6,14 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   31337: {
-    YourContract: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    LandRegistry: {
+      address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
       abi: [
         {
           inputs: [
             {
               internalType: "address",
-              name: "_owner",
+              name: "_approver",
               type: "address",
             },
           ],
@@ -26,47 +26,89 @@ const deployedContracts = {
             {
               indexed: true,
               internalType: "address",
-              name: "greetingSetter",
+              name: "landOwnerAddress",
               type: "address",
             },
             {
-              indexed: false,
+              indexed: true,
               internalType: "string",
-              name: "newGreeting",
+              name: "userDid",
+              type: "string",
+            },
+            {
+              indexed: true,
+              internalType: "string",
+              name: "thramNumber",
               type: "string",
             },
             {
               indexed: false,
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "location",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "areaInAcre",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "areaInDecimal",
+              type: "uint256",
+            },
+            {
+              indexed: false,
               internalType: "bool",
-              name: "premium",
+              name: "isVerified",
               type: "bool",
             },
             {
               indexed: false,
               internalType: "uint256",
-              name: "value",
+              name: "timestamp",
               type: "uint256",
             },
           ],
-          name: "GreetingChange",
+          name: "LandRegistered",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "string",
+              name: "thramNumber",
+              type: "string",
+            },
+            {
+              indexed: true,
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "bool",
+              name: "isVerified",
+              type: "bool",
+            },
+          ],
+          name: "LandVerified",
           type: "event",
         },
         {
           inputs: [],
-          name: "greeting",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
+          name: "approver",
           outputs: [
             {
               internalType: "address",
@@ -78,9 +120,55 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "premium",
+          inputs: [
+            {
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
+            },
+          ],
+          name: "getLandByPlotNumber",
           outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
             {
               internalType: "bool",
               name: "",
@@ -93,24 +181,196 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "_newGreeting",
-              type: "string",
+              internalType: "address",
+              name: "_owner",
+              type: "address",
             },
           ],
-          name: "setGreeting",
-          outputs: [],
-          stateMutability: "payable",
+          name: "getLandsByOwner",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "address",
+                  name: "landOwnerAddress",
+                  type: "address",
+                },
+                {
+                  internalType: "string",
+                  name: "userDid",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "thramNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "plotNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "location",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "areaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "areaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timestamp",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bool",
+                  name: "isVerified",
+                  type: "bool",
+                },
+              ],
+              internalType: "struct LandRegistry.LandDetails[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
-          inputs: [],
-          name: "totalCounter",
+          inputs: [
+            {
+              internalType: "string",
+              name: "_userDid",
+              type: "string",
+            },
+          ],
+          name: "getLandsByUserDid",
           outputs: [
             {
-              internalType: "uint256",
+              components: [
+                {
+                  internalType: "address",
+                  name: "landOwnerAddress",
+                  type: "address",
+                },
+                {
+                  internalType: "string",
+                  name: "userDid",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "thramNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "plotNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "location",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "areaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "areaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timestamp",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bool",
+                  name: "isVerified",
+                  type: "bool",
+                },
+              ],
+              internalType: "struct LandRegistry.LandDetails[]",
               name: "",
-              type: "uint256",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_thramNumber",
+              type: "string",
+            },
+          ],
+          name: "getPlotsByThramNumber",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "address",
+                  name: "landOwnerAddress",
+                  type: "address",
+                },
+                {
+                  internalType: "string",
+                  name: "userDid",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "thramNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "plotNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "location",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "areaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "areaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timestamp",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bool",
+                  name: "isVerified",
+                  type: "bool",
+                },
+              ],
+              internalType: "struct LandRegistry.LandDetails[]",
+              name: "",
+              type: "tuple[]",
             },
           ],
           stateMutability: "view",
@@ -123,28 +383,310 @@ const deployedContracts = {
               name: "",
               type: "address",
             },
-          ],
-          name: "userGreetingCounter",
-          outputs: [
             {
               internalType: "uint256",
               name: "",
               type: "uint256",
             },
           ],
+          name: "landsByOwner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "landOwnerAddress",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "userDid",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "location",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "isVerified",
+              type: "bool",
+            },
+          ],
           stateMutability: "view",
           type: "function",
         },
         {
-          inputs: [],
-          name: "withdraw",
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          name: "landsByPlotNumber",
+          outputs: [
+            {
+              internalType: "address",
+              name: "landOwnerAddress",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "userDid",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "location",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "isVerified",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "landsByThramNumber",
+          outputs: [
+            {
+              internalType: "address",
+              name: "landOwnerAddress",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "userDid",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "location",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "isVerified",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "landsByUserDid",
+          outputs: [
+            {
+              internalType: "address",
+              name: "landOwnerAddress",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "userDid",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "location",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "areaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "isVerified",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_location",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_areaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_areaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "_landOwnerAddress",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "_userDid",
+              type: "string",
+            },
+          ],
+          name: "registerLand",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
         },
         {
-          stateMutability: "payable",
-          type: "receive",
+          inputs: [
+            {
+              internalType: "string",
+              name: "_thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
+            },
+          ],
+          name: "verifyLand",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
         },
       ],
       inheritedFunctions: {},
