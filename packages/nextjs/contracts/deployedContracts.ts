@@ -6,8 +6,818 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   31337: {
+    LandNFT: {
+      address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_landRegistry",
+              type: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "approved",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "Approval",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "bool",
+              name: "approved",
+              type: "bool",
+            },
+          ],
+          name: "ApprovalForAll",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "_fromTokenId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "_toTokenId",
+              type: "uint256",
+            },
+          ],
+          name: "BatchMetadataUpdate",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "enum LandNFT.TokenType",
+              name: "tokenType",
+              type: "uint8",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "thramNumber",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "acres",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "decimals",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "address[]",
+              name: "owners",
+              type: "address[]",
+            },
+          ],
+          name: "LandTokenized",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "_tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "MetadataUpdate",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "Transfer",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "addJointOwner",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "approve",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "balanceOf",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "getApproved",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
+            },
+          ],
+          name: "getTokensByPlot",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint256",
+                  name: "tokenId",
+                  type: "uint256",
+                },
+                {
+                  internalType: "enum LandNFT.TokenType",
+                  name: "tokenType",
+                  type: "uint8",
+                },
+                {
+                  internalType: "string",
+                  name: "thramNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "plotNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "acres",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "decimals",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address[]",
+                  name: "owners",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "creationTime",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct LandNFT.LandToken[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_thramNumber",
+              type: "string",
+            },
+          ],
+          name: "getTokensByThram",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "uint256",
+                  name: "tokenId",
+                  type: "uint256",
+                },
+                {
+                  internalType: "enum LandNFT.TokenType",
+                  name: "tokenType",
+                  type: "uint8",
+                },
+                {
+                  internalType: "string",
+                  name: "thramNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "plotNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "acres",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "decimals",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address[]",
+                  name: "owners",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "creationTime",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct LandNFT.LandToken[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+          ],
+          name: "isApprovedForAll",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "landRegistry",
+          outputs: [
+            {
+              internalType: "contract LandRegistry",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "landTokens",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "enum LandNFT.TokenType",
+              name: "tokenType",
+              type: "uint8",
+            },
+            {
+              internalType: "string",
+              name: "thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "acres",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "decimals",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "creationTime",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_acres",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_decimals",
+              type: "uint256",
+            },
+            {
+              internalType: "address[]",
+              name: "_owners",
+              type: "address[]",
+            },
+          ],
+          name: "mintFractionToken",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
+            },
+            {
+              internalType: "address[]",
+              name: "_owners",
+              type: "address[]",
+            },
+          ],
+          name: "mintPlotToken",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_thramNumber",
+              type: "string",
+            },
+            {
+              internalType: "address[]",
+              name: "_owners",
+              type: "address[]",
+            },
+          ],
+          name: "mintThramToken",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "name",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "ownerOf",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "safeTransferFrom",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+            {
+              internalType: "bytes",
+              name: "data",
+              type: "bytes",
+            },
+          ],
+          name: "safeTransferFrom",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "operator",
+              type: "address",
+            },
+            {
+              internalType: "bool",
+              name: "approved",
+              type: "bool",
+            },
+          ],
+          name: "setApprovalForAll",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes4",
+              name: "interfaceId",
+              type: "bytes4",
+            },
+          ],
+          name: "supportsInterface",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "symbol",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "tokenIdsByPlot",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "tokenIdsByThram",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "tokenURI",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "transferFrom",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {
+        approve: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        balanceOf: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        getApproved: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        isApprovedForAll: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        name: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        ownerOf: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        safeTransferFrom: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        setApprovalForAll: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        supportsInterface: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        symbol: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        tokenURI: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        transferFrom: "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        owner: "@openzeppelin/contracts/access/Ownable.sol",
+        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+      },
+    },
     LandRegistry: {
-      address: "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
       abi: [
         {
           inputs: [
@@ -19,6 +829,31 @@ const deployedContracts = {
           ],
           stateMutability: "nonpayable",
           type: "constructor",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "string",
+              name: "plotNumber",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "acres",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "decimals",
+              type: "uint256",
+            },
+          ],
+          name: "LandFractionalized",
+          type: "event",
         },
         {
           anonymous: false,
@@ -56,13 +891,13 @@ const deployedContracts = {
             {
               indexed: false,
               internalType: "uint256",
-              name: "areaInAcre",
+              name: "totalAreaInAcre",
               type: "uint256",
             },
             {
               indexed: false,
               internalType: "uint256",
-              name: "areaInDecimal",
+              name: "totalAreaInDecimal",
               type: "uint256",
             },
             {
@@ -126,53 +961,93 @@ const deployedContracts = {
               name: "_plotNumber",
               type: "string",
             },
+            {
+              internalType: "uint256",
+              name: "_acresToFractionalize",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "_decimalsToFractionalize",
+              type: "uint256",
+            },
+          ],
+          name: "fractionalizeLand",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
+            },
           ],
           name: "getLandByPlotNumber",
           outputs: [
             {
-              internalType: "address",
+              components: [
+                {
+                  internalType: "address",
+                  name: "landOwnerAddress",
+                  type: "address",
+                },
+                {
+                  internalType: "string",
+                  name: "userDid",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "thramNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "plotNumber",
+                  type: "string",
+                },
+                {
+                  internalType: "string",
+                  name: "location",
+                  type: "string",
+                },
+                {
+                  internalType: "uint256",
+                  name: "totalAreaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "totalAreaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timestamp",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bool",
+                  name: "isVerified",
+                  type: "bool",
+                },
+              ],
+              internalType: "struct LandRegistry.LandDetails",
               name: "",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
+              type: "tuple",
             },
           ],
           stateMutability: "view",
@@ -217,12 +1092,22 @@ const deployedContracts = {
                 },
                 {
                   internalType: "uint256",
-                  name: "areaInAcre",
+                  name: "totalAreaInAcre",
                   type: "uint256",
                 },
                 {
                   internalType: "uint256",
-                  name: "areaInDecimal",
+                  name: "totalAreaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInDecimal",
                   type: "uint256",
                 },
                 {
@@ -283,12 +1168,22 @@ const deployedContracts = {
                 },
                 {
                   internalType: "uint256",
-                  name: "areaInAcre",
+                  name: "totalAreaInAcre",
                   type: "uint256",
                 },
                 {
                   internalType: "uint256",
-                  name: "areaInDecimal",
+                  name: "totalAreaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInDecimal",
                   type: "uint256",
                 },
                 {
@@ -349,12 +1244,22 @@ const deployedContracts = {
                 },
                 {
                   internalType: "uint256",
-                  name: "areaInAcre",
+                  name: "totalAreaInAcre",
                   type: "uint256",
                 },
                 {
                   internalType: "uint256",
-                  name: "areaInDecimal",
+                  name: "totalAreaInDecimal",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInAcre",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "availableAreaInDecimal",
                   type: "uint256",
                 },
                 {
@@ -418,12 +1323,22 @@ const deployedContracts = {
             },
             {
               internalType: "uint256",
-              name: "areaInAcre",
+              name: "totalAreaInAcre",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "areaInDecimal",
+              name: "totalAreaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInDecimal",
               type: "uint256",
             },
             {
@@ -477,12 +1392,22 @@ const deployedContracts = {
             },
             {
               internalType: "uint256",
-              name: "areaInAcre",
+              name: "totalAreaInAcre",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "areaInDecimal",
+              name: "totalAreaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInDecimal",
               type: "uint256",
             },
             {
@@ -541,12 +1466,22 @@ const deployedContracts = {
             },
             {
               internalType: "uint256",
-              name: "areaInAcre",
+              name: "totalAreaInAcre",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "areaInDecimal",
+              name: "totalAreaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInDecimal",
               type: "uint256",
             },
             {
@@ -605,12 +1540,22 @@ const deployedContracts = {
             },
             {
               internalType: "uint256",
-              name: "areaInAcre",
+              name: "totalAreaInAcre",
               type: "uint256",
             },
             {
               internalType: "uint256",
-              name: "areaInDecimal",
+              name: "totalAreaInDecimal",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInAcre",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "availableAreaInDecimal",
               type: "uint256",
             },
             {
