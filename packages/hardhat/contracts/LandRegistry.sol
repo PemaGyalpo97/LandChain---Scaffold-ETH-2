@@ -7,7 +7,7 @@ import "hardhat/console.sol";
 contract LandRegistry {
     // State Variables
     address public immutable approver;
-    address public immutable owner;
+    address public owner;
     
     // Define a struct to hold the land details
     struct LandDetails {
@@ -71,7 +71,6 @@ contract LandRegistry {
         require(bytes(_userDid).length > 0, "User DID cannot be empty");
         require(_areaInAcre > 0 || _areaInDecimal > 0, "Area must be greater than zero");
         require(landsByPlotNumber[_plotNumber].landOwnerAddress == address(0), "Plot number already registered");
-        require(landsByThramNumber[_thramNumber].landOwnerAddress == address(0), "Thram number already registered");
 
         LandDetails memory newLand = LandDetails({
             landOwnerAddress: _landOwnerAddress,
