@@ -14,7 +14,13 @@ contract LandNFT is ERC721, ERC721URIStorage, Ownable {
     LandRegistry public landRegistry;
 
     enum TokenType { THRAM, PLOT, FRACTION }
-    
+
+    struct OwnerInfo {
+        address ownerAddress;
+        string userDid;
+        uint256 ownershipPercentage;
+    }
+
     struct LandToken {
         uint256 tokenId;
         TokenType tokenType;
@@ -22,13 +28,13 @@ contract LandNFT is ERC721, ERC721URIStorage, Ownable {
         string plotNumber;
         uint256 acres;
         uint256 decimals;
-        address[] owners;
+        OwnerInfo[] owners;
         uint256 creationTime;
     }
 
-    mapping(uint256 => LandToken) public landTokens;
-    mapping(string => uint256[]) public tokenIdsByThram;
-    mapping(string => uint256[]) public tokenIdsByPlot;
+    mapping(uint256 => LandToken) private _landTokens;
+    mapping(string => uint256[]) private _tokenIdsByThram;
+    mapping(string => uint256[]) private _tokenIdsByPlot;
 
     event LandTokenized(
         uint256 indexed tokenId,
@@ -37,103 +43,152 @@ contract LandNFT is ERC721, ERC721URIStorage, Ownable {
         string plotNumber,
         uint256 acres,
         uint256 decimals,
-        address[] owners
+        address[] owners,
+        uint256[] ownershipPercentages
     );
 
     constructor(address _landRegistry) ERC721("LandNFT", "LNFT") {
         landRegistry = LandRegistry(_landRegistry);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (bool)
-    {
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+        delete _landTokens[tokenId];
+    }
+
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
-    function mintThramToken(string memory _thramNumber, address[] memory _owners) public onlyOwner {
+    function mintThramToken(
+        string memory _thramNumber,
+        address[] memory _owners,
+        string[] memory _userDids,
+        uint256[] memory _percentages
+    ) public onlyOwner {
         LandRegistry.LandDetails[] memory parcels = landRegistry.getPlotsByThramNumber(_thramNumber);
         require(parcels.length > 0, "No parcels found for this thram");
+        require(_owners.length == _userDids.length && _owners.length == _percentages.length, "Input arrays length mismatch");
 
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
-        
-        LandToken memory newToken = LandToken({
-            tokenId: tokenId,
-            tokenType: TokenType.THRAM,
-            thramNumber: _thramNumber,
-            plotNumber: "",
-            acres: 0,
-            decimals: 0,
-            owners: _owners,
-            creationTime: block.timestamp
-        });
 
-        _mintToken(tokenId, newToken, _owners);
-        tokenIdsByThram[_thramNumber].push(tokenId);
+        LandToken storage newToken = _landTokens[tokenId];
+        newToken.tokenId = tokenId;
+        newToken.tokenType = TokenType.THRAM;
+        newToken.thramNumber = _thramNumber;
+        newToken.plotNumber = "";
+        newToken.acres = 0;
+        newToken.decimals = 0;
+        newToken.creationTime = block.timestamp;
+
+        for (uint i = 0; i < _owners.length; i++) {
+            newToken.owners.push(OwnerInfo({
+                ownerAddress: _owners[i],
+                userDid: _userDids[i],
+                ownershipPercentage: _percentages[i]
+            }));
+        }
+
+        _mintToken(tokenId, newToken);
+        _tokenIdsByThram[_thramNumber].push(tokenId);
     }
 
-    function mintPlotToken(string memory _plotNumber, address[] memory _owners) public onlyOwner {
-        LandRegistry.LandDetails memory parcel = landRegistry.getLandByPlotNumber(_plotNumber);
-        require(parcel.landOwnerAddress != address(0), "Plot not found");
+    function mintPlotToken(
+        string memory _plotNumber,
+        address[] memory _owners,
+        string[] memory _userDids,
+        uint256[] memory _percentages
+    ) public onlyOwner {
+        require(_owners.length == _userDids.length && _owners.length == _percentages.length, "Input arrays length mismatch");
+
+        LandRegistry.LandDetails memory land = landRegistry.getLandByPlotNumber(_plotNumber);
+        require(land.owners.length > 0, "Plot not found");
 
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
-        
-        LandToken memory newToken = LandToken({
-            tokenId: tokenId,
-            tokenType: TokenType.PLOT,
-            thramNumber: parcel.thramNumber,
-            plotNumber: _plotNumber,
-            acres: parcel.totalAreaInAcre,
-            decimals: parcel.totalAreaInDecimal,
-            owners: _owners,
-            creationTime: block.timestamp
-        });
 
-        _mintToken(tokenId, newToken, _owners);
-        tokenIdsByPlot[_plotNumber].push(tokenId);
+        LandToken storage newToken = _landTokens[tokenId];
+        newToken.tokenId = tokenId;
+        newToken.tokenType = TokenType.PLOT;
+        newToken.thramNumber = land.thramNumber;
+        newToken.plotNumber = land.plotNumber;
+        newToken.acres = land.totalAreaInAcre;
+        newToken.decimals = land.totalAreaInDecimal;
+        newToken.creationTime = block.timestamp;
+
+        for (uint i = 0; i < _owners.length; i++) {
+            newToken.owners.push(OwnerInfo({
+                ownerAddress: _owners[i],
+                userDid: _userDids[i],
+                ownershipPercentage: _percentages[i]
+            }));
+        }
+
+        _mintToken(tokenId, newToken);
+        _tokenIdsByPlot[_plotNumber].push(tokenId);
     }
 
     function mintFractionToken(
         string memory _plotNumber,
         uint256 _acres,
         uint256 _decimals,
-        address[] memory _owners
+        address[] memory _owners,
+        string[] memory _userDids,
+        uint256[] memory _percentages
     ) public onlyOwner {
-        LandRegistry.LandDetails memory parcel = landRegistry.getLandByPlotNumber(_plotNumber);
-        require(parcel.landOwnerAddress != address(0), "Plot not found");
+        require(_owners.length == _userDids.length && _owners.length == _percentages.length, "Input arrays length mismatch");
+
+        LandRegistry.LandDetails memory land = landRegistry.getLandByPlotNumber(_plotNumber);
+        require(land.owners.length > 0, "Plot not found");
         require(
-            _acres <= parcel.availableAreaInAcre && 
-            _decimals <= parcel.availableAreaInDecimal,
+            _acres <= land.availableAreaInAcre &&
+            _decimals <= land.availableAreaInDecimal,
             "Fraction exceeds available area"
         );
 
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
-        
-        LandToken memory newToken = LandToken({
-            tokenId: tokenId,
-            tokenType: TokenType.FRACTION,
-            thramNumber: parcel.thramNumber,
-            plotNumber: _plotNumber,
-            acres: _acres,
-            decimals: _decimals,
-            owners: _owners,
-            creationTime: block.timestamp
-        });
 
-        _mintToken(tokenId, newToken, _owners);
-        tokenIdsByPlot[_plotNumber].push(tokenId);
-        
+        LandToken storage newToken = _landTokens[tokenId];
+        newToken.tokenId = tokenId;
+        newToken.tokenType = TokenType.FRACTION;
+        newToken.thramNumber = land.thramNumber;
+        newToken.plotNumber = land.plotNumber;
+        newToken.acres = _acres;
+        newToken.decimals = _decimals;
+        newToken.creationTime = block.timestamp;
+
+        for (uint i = 0; i < _owners.length; i++) {
+            newToken.owners.push(OwnerInfo({
+                ownerAddress: _owners[i],
+                userDid: _userDids[i],
+                ownershipPercentage: _percentages[i]
+            }));
+        }
+
+        _mintToken(tokenId, newToken);
+        _tokenIdsByPlot[_plotNumber].push(tokenId);
+
         landRegistry.fractionalizeLand(_plotNumber, _acres, _decimals);
     }
 
-    function _mintToken(uint256 tokenId, LandToken memory tokenData, address[] memory owners) private {
-        landTokens[tokenId] = tokenData;
-        _safeMint(owners[0], tokenId);
+    function _mintToken(uint256 tokenId, LandToken storage tokenData) private {
+        for (uint i = 0; i < tokenData.owners.length; i++) {
+            _safeMint(tokenData.owners[i].ownerAddress, tokenId);
+        }
+
+        address[] memory owners = new address[](tokenData.owners.length);
+        uint256[] memory percentages = new uint256[](tokenData.owners.length);
+        for (uint i = 0; i < tokenData.owners.length; i++) {
+            owners[i] = tokenData.owners[i].ownerAddress;
+            percentages[i] = tokenData.owners[i].ownershipPercentage;
+        }
+
         emit LandTokenized(
             tokenId,
             tokenData.tokenType,
@@ -141,46 +196,55 @@ contract LandNFT is ERC721, ERC721URIStorage, Ownable {
             tokenData.plotNumber,
             tokenData.acres,
             tokenData.decimals,
-            owners
+            owners,
+            percentages
         );
     }
 
-    function addJointOwner(uint256 tokenId, address newOwner) public {
-        require(_isApprovedOrOwner(msg.sender, tokenId), "Caller is not owner nor approved");
-        landTokens[tokenId].owners.push(newOwner);
-    }
+    function getToken(uint256 tokenId) public view returns (
+        uint256,
+        TokenType,
+        string memory,
+        string memory,
+        uint256,
+        uint256,
+        address[] memory,
+        string[] memory,
+        uint256[] memory,
+        uint256
+    ) {
+        LandToken storage token = _landTokens[tokenId];
+        require(token.tokenId != 0, "Token does not exist");
 
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-        delete landTokens[tokenId];
-    }
+        address[] memory owners = new address[](token.owners.length);
+        string[] memory dids = new string[](token.owners.length);
+        uint256[] memory percentages = new uint256[](token.owners.length);
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
-    }
-
-    function getTokensByThram(string memory _thramNumber) public view returns (LandToken[] memory) {
-        uint256[] memory ids = tokenIdsByThram[_thramNumber];
-        LandToken[] memory tokens = new LandToken[](ids.length);
-        
-        for (uint256 i = 0; i < ids.length; i++) {
-            tokens[i] = landTokens[ids[i]];
+        for (uint i = 0; i < token.owners.length; i++) {
+            owners[i] = token.owners[i].ownerAddress;
+            dids[i] = token.owners[i].userDid;
+            percentages[i] = token.owners[i].ownershipPercentage;
         }
-        return tokens;
+
+        return (
+            token.tokenId,
+            token.tokenType,
+            token.thramNumber,
+            token.plotNumber,
+            token.acres,
+            token.decimals,
+            owners,
+            dids,
+            percentages,
+            token.creationTime
+        );
     }
 
-    function getTokensByPlot(string memory _plotNumber) public view returns (LandToken[] memory) {
-        uint256[] memory ids = tokenIdsByPlot[_plotNumber];
-        LandToken[] memory tokens = new LandToken[](ids.length);
-        
-        for (uint256 i = 0; i < ids.length; i++) {
-            tokens[i] = landTokens[ids[i]];
-        }
-        return tokens;
+    function getTokensByThram(string memory _thramNumber) public view returns (uint256[] memory) {
+        return _tokenIdsByThram[_thramNumber];
+    }
+
+    function getTokensByPlot(string memory _plotNumber) public view returns (uint256[] memory) {
+        return _tokenIdsByPlot[_plotNumber];
     }
 }

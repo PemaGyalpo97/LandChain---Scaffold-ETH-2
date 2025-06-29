@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     LandNFT: {
-      address: "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       abi: [
         {
           inputs: [
@@ -134,6 +134,12 @@ const deployedContracts = {
               name: "owners",
               type: "address[]",
             },
+            {
+              indexed: false,
+              internalType: "uint256[]",
+              name: "ownershipPercentages",
+              type: "uint256[]",
+            },
           ],
           name: "LandTokenized",
           type: "event",
@@ -198,24 +204,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "newOwner",
-              type: "address",
-            },
-          ],
-          name: "addJointOwner",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "address",
               name: "to",
               type: "address",
@@ -272,6 +260,70 @@ const deployedContracts = {
         {
           inputs: [
             {
+              internalType: "uint256",
+              name: "tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "getToken",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "enum LandNFT.TokenType",
+              name: "",
+              type: "uint8",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+            {
+              internalType: "address[]",
+              name: "",
+              type: "address[]",
+            },
+            {
+              internalType: "string[]",
+              name: "",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
+            },
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "string",
               name: "_plotNumber",
               type: "string",
@@ -280,51 +332,9 @@ const deployedContracts = {
           name: "getTokensByPlot",
           outputs: [
             {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "tokenId",
-                  type: "uint256",
-                },
-                {
-                  internalType: "enum LandNFT.TokenType",
-                  name: "tokenType",
-                  type: "uint8",
-                },
-                {
-                  internalType: "string",
-                  name: "thramNumber",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "plotNumber",
-                  type: "string",
-                },
-                {
-                  internalType: "uint256",
-                  name: "acres",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "decimals",
-                  type: "uint256",
-                },
-                {
-                  internalType: "address[]",
-                  name: "owners",
-                  type: "address[]",
-                },
-                {
-                  internalType: "uint256",
-                  name: "creationTime",
-                  type: "uint256",
-                },
-              ],
-              internalType: "struct LandNFT.LandToken[]",
+              internalType: "uint256[]",
               name: "",
-              type: "tuple[]",
+              type: "uint256[]",
             },
           ],
           stateMutability: "view",
@@ -341,51 +351,9 @@ const deployedContracts = {
           name: "getTokensByThram",
           outputs: [
             {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "tokenId",
-                  type: "uint256",
-                },
-                {
-                  internalType: "enum LandNFT.TokenType",
-                  name: "tokenType",
-                  type: "uint8",
-                },
-                {
-                  internalType: "string",
-                  name: "thramNumber",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "plotNumber",
-                  type: "string",
-                },
-                {
-                  internalType: "uint256",
-                  name: "acres",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "decimals",
-                  type: "uint256",
-                },
-                {
-                  internalType: "address[]",
-                  name: "owners",
-                  type: "address[]",
-                },
-                {
-                  internalType: "uint256",
-                  name: "creationTime",
-                  type: "uint256",
-                },
-              ],
-              internalType: "struct LandNFT.LandToken[]",
+              internalType: "uint256[]",
               name: "",
-              type: "tuple[]",
+              type: "uint256[]",
             },
           ],
           stateMutability: "view",
@@ -431,55 +399,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "landTokens",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "tokenId",
-              type: "uint256",
-            },
-            {
-              internalType: "enum LandNFT.TokenType",
-              name: "tokenType",
-              type: "uint8",
-            },
-            {
-              internalType: "string",
-              name: "thramNumber",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "plotNumber",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "acres",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "decimals",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "creationTime",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "string",
               name: "_plotNumber",
               type: "string",
@@ -499,6 +418,16 @@ const deployedContracts = {
               name: "_owners",
               type: "address[]",
             },
+            {
+              internalType: "string[]",
+              name: "_userDids",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "_percentages",
+              type: "uint256[]",
+            },
           ],
           name: "mintFractionToken",
           outputs: [],
@@ -517,6 +446,16 @@ const deployedContracts = {
               name: "_owners",
               type: "address[]",
             },
+            {
+              internalType: "string[]",
+              name: "_userDids",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "_percentages",
+              type: "uint256[]",
+            },
           ],
           name: "mintPlotToken",
           outputs: [],
@@ -534,6 +473,16 @@ const deployedContracts = {
               internalType: "address[]",
               name: "_owners",
               type: "address[]",
+            },
+            {
+              internalType: "string[]",
+              name: "_userDids",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "_percentages",
+              type: "uint256[]",
             },
           ],
           name: "mintThramToken",
@@ -697,54 +646,6 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "tokenIdsByPlot",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "tokenIdsByThram",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
               internalType: "uint256",
               name: "tokenId",
               type: "uint256",
@@ -817,7 +718,7 @@ const deployedContracts = {
       },
     },
     LandRegistry: {
-      address: "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           inputs: [
@@ -860,33 +761,27 @@ const deployedContracts = {
           inputs: [
             {
               indexed: true,
-              internalType: "address",
-              name: "landOwnerAddress",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "string",
-              name: "userDid",
-              type: "string",
-            },
-            {
-              indexed: true,
               internalType: "string",
               name: "thramNumber",
               type: "string",
             },
             {
-              indexed: false,
+              indexed: true,
               internalType: "string",
               name: "plotNumber",
               type: "string",
             },
             {
               indexed: false,
-              internalType: "string",
-              name: "location",
-              type: "string",
+              internalType: "address[]",
+              name: "owners",
+              type: "address[]",
+            },
+            {
+              indexed: false,
+              internalType: "string[]",
+              name: "userDids",
+              type: "string[]",
             },
             {
               indexed: false,
@@ -902,15 +797,9 @@ const deployedContracts = {
             },
             {
               indexed: false,
-              internalType: "bool",
-              name: "isVerified",
-              type: "bool",
-            },
-            {
-              indexed: false,
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
+              internalType: "enum LandRegistry.OwnershipType",
+              name: "ownershipType",
+              type: "uint8",
             },
           ],
           name: "LandRegistered",
@@ -931,14 +820,27 @@ const deployedContracts = {
               name: "plotNumber",
               type: "string",
             },
-            {
-              indexed: false,
-              internalType: "bool",
-              name: "isVerified",
-              type: "bool",
-            },
           ],
           name: "LandVerified",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "previousOwner",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "OwnershipTransferred",
           type: "event",
         },
         {
@@ -990,14 +892,26 @@ const deployedContracts = {
             {
               components: [
                 {
-                  internalType: "address",
-                  name: "landOwnerAddress",
-                  type: "address",
-                },
-                {
-                  internalType: "string",
-                  name: "userDid",
-                  type: "string",
+                  components: [
+                    {
+                      internalType: "address",
+                      name: "ownerAddress",
+                      type: "address",
+                    },
+                    {
+                      internalType: "string",
+                      name: "userDid",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "ownershipPercentage",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LandRegistry.OwnerInfo[]",
+                  name: "owners",
+                  type: "tuple[]",
                 },
                 {
                   internalType: "string",
@@ -1043,6 +957,11 @@ const deployedContracts = {
                   internalType: "bool",
                   name: "isVerified",
                   type: "bool",
+                },
+                {
+                  internalType: "enum LandRegistry.OwnershipType",
+                  name: "ownershipType",
+                  type: "uint8",
                 },
               ],
               internalType: "struct LandRegistry.LandDetails",
@@ -1056,25 +975,15 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "address",
-              name: "_owner",
-              type: "address",
+              internalType: "string",
+              name: "_plotNumber",
+              type: "string",
             },
           ],
-          name: "getLandsByOwner",
+          name: "getLandInfoByPlotNumber",
           outputs: [
             {
               components: [
-                {
-                  internalType: "address",
-                  name: "landOwnerAddress",
-                  type: "address",
-                },
-                {
-                  internalType: "string",
-                  name: "userDid",
-                  type: "string",
-                },
                 {
                   internalType: "string",
                   name: "thramNumber",
@@ -1120,10 +1029,15 @@ const deployedContracts = {
                   name: "isVerified",
                   type: "bool",
                 },
+                {
+                  internalType: "enum LandRegistry.OwnershipType",
+                  name: "ownershipType",
+                  type: "uint8",
+                },
               ],
-              internalType: "struct LandRegistry.LandDetails[]",
+              internalType: "struct LandRegistry.BasicLandInfo",
               name: "",
-              type: "tuple[]",
+              type: "tuple",
             },
           ],
           stateMutability: "view",
@@ -1133,73 +1047,21 @@ const deployedContracts = {
           inputs: [
             {
               internalType: "string",
-              name: "_userDid",
+              name: "_plotNumber",
               type: "string",
             },
           ],
-          name: "getLandsByUserDid",
+          name: "getLandOwnersByPlotNumber",
           outputs: [
             {
-              components: [
-                {
-                  internalType: "address",
-                  name: "landOwnerAddress",
-                  type: "address",
-                },
-                {
-                  internalType: "string",
-                  name: "userDid",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "thramNumber",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "plotNumber",
-                  type: "string",
-                },
-                {
-                  internalType: "string",
-                  name: "location",
-                  type: "string",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalAreaInAcre",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalAreaInDecimal",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "availableAreaInAcre",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "availableAreaInDecimal",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "timestamp",
-                  type: "uint256",
-                },
-                {
-                  internalType: "bool",
-                  name: "isVerified",
-                  type: "bool",
-                },
-              ],
-              internalType: "struct LandRegistry.LandDetails[]",
-              name: "",
-              type: "tuple[]",
+              internalType: "address[]",
+              name: "ownerAddresses",
+              type: "address[]",
+            },
+            {
+              internalType: "string[]",
+              name: "userDids",
+              type: "string[]",
             },
           ],
           stateMutability: "view",
@@ -1218,14 +1080,26 @@ const deployedContracts = {
             {
               components: [
                 {
-                  internalType: "address",
-                  name: "landOwnerAddress",
-                  type: "address",
-                },
-                {
-                  internalType: "string",
-                  name: "userDid",
-                  type: "string",
+                  components: [
+                    {
+                      internalType: "address",
+                      name: "ownerAddress",
+                      type: "address",
+                    },
+                    {
+                      internalType: "string",
+                      name: "userDid",
+                      type: "string",
+                    },
+                    {
+                      internalType: "uint256",
+                      name: "ownershipPercentage",
+                      type: "uint256",
+                    },
+                  ],
+                  internalType: "struct LandRegistry.OwnerInfo[]",
+                  name: "owners",
+                  type: "tuple[]",
                 },
                 {
                   internalType: "string",
@@ -1271,6 +1145,11 @@ const deployedContracts = {
                   internalType: "bool",
                   name: "isVerified",
                   type: "bool",
+                },
+                {
+                  internalType: "enum LandRegistry.OwnershipType",
+                  name: "ownershipType",
+                  type: "uint8",
                 },
               ],
               internalType: "struct LandRegistry.LandDetails[]",
@@ -1297,16 +1176,6 @@ const deployedContracts = {
           name: "landsByOwner",
           outputs: [
             {
-              internalType: "address",
-              name: "landOwnerAddress",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "userDid",
-              type: "string",
-            },
-            {
               internalType: "string",
               name: "thramNumber",
               type: "string",
@@ -1350,6 +1219,11 @@ const deployedContracts = {
               internalType: "bool",
               name: "isVerified",
               type: "bool",
+            },
+            {
+              internalType: "enum LandRegistry.OwnershipType",
+              name: "ownershipType",
+              type: "uint8",
             },
           ],
           stateMutability: "view",
@@ -1366,16 +1240,6 @@ const deployedContracts = {
           name: "landsByPlotNumber",
           outputs: [
             {
-              internalType: "address",
-              name: "landOwnerAddress",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "userDid",
-              type: "string",
-            },
-            {
               internalType: "string",
               name: "thramNumber",
               type: "string",
@@ -1419,6 +1283,11 @@ const deployedContracts = {
               internalType: "bool",
               name: "isVerified",
               type: "bool",
+            },
+            {
+              internalType: "enum LandRegistry.OwnershipType",
+              name: "ownershipType",
+              type: "uint8",
             },
           ],
           stateMutability: "view",
@@ -1440,16 +1309,6 @@ const deployedContracts = {
           name: "landsByThramNumber",
           outputs: [
             {
-              internalType: "address",
-              name: "landOwnerAddress",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "userDid",
-              type: "string",
-            },
-            {
               internalType: "string",
               name: "thramNumber",
               type: "string",
@@ -1493,6 +1352,11 @@ const deployedContracts = {
               internalType: "bool",
               name: "isVerified",
               type: "bool",
+            },
+            {
+              internalType: "enum LandRegistry.OwnershipType",
+              name: "ownershipType",
+              type: "uint8",
             },
           ],
           stateMutability: "view",
@@ -1514,16 +1378,6 @@ const deployedContracts = {
           name: "landsByUserDid",
           outputs: [
             {
-              internalType: "address",
-              name: "landOwnerAddress",
-              type: "address",
-            },
-            {
-              internalType: "string",
-              name: "userDid",
-              type: "string",
-            },
-            {
               internalType: "string",
               name: "thramNumber",
               type: "string",
@@ -1567,6 +1421,24 @@ const deployedContracts = {
               internalType: "bool",
               name: "isVerified",
               type: "bool",
+            },
+            {
+              internalType: "enum LandRegistry.OwnershipType",
+              name: "ownershipType",
+              type: "uint8",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
             },
           ],
           stateMutability: "view",
@@ -1600,17 +1472,60 @@ const deployedContracts = {
               type: "uint256",
             },
             {
-              internalType: "address",
-              name: "_landOwnerAddress",
-              type: "address",
+              internalType: "address[]",
+              name: "_landOwnerAddresses",
+              type: "address[]",
             },
             {
-              internalType: "string",
-              name: "_userDid",
-              type: "string",
+              internalType: "string[]",
+              name: "_userDids",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "_ownershipPercentages",
+              type: "uint256[]",
+            },
+            {
+              internalType: "enum LandRegistry.OwnershipType",
+              name: "_ownershipType",
+              type: "uint8",
             },
           ],
           name: "registerLand",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "renounceOwnership",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "totalLandsRegistered",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "newOwner",
+              type: "address",
+            },
+          ],
+          name: "transferOwnership",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -1634,7 +1549,11 @@ const deployedContracts = {
           type: "function",
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        owner: "@openzeppelin/contracts/access/Ownable.sol",
+        renounceOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+        transferOwnership: "@openzeppelin/contracts/access/Ownable.sol",
+      },
     },
   },
   42161: {

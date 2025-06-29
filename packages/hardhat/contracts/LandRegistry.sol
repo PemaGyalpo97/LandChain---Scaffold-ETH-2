@@ -1,18 +1,19 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
-contract LandRegistry {
-    // State Variables
-    address public immutable approver;
-    // address public owner;
-    
-    // Define a struct to hold the land details
-    struct LandDetails {
-        address landOwnerAddress;
+contract LandRegistry is Ownable {
+    enum OwnershipType { SINGLE, JOINT, HOUSEHOLD_HEAD }
+
+    struct OwnerInfo {
+        address ownerAddress;
         string userDid;
+        uint256 ownershipPercentage;
+    }
+
+    struct LandDetails {
+        OwnerInfo[] owners;
         string thramNumber;
         string plotNumber;
         string location;
@@ -22,28 +23,41 @@ contract LandRegistry {
         uint256 availableAreaInDecimal;
         uint256 timestamp;
         bool isVerified;
+        OwnershipType ownershipType;
     }
 
-    // Define mappings for efficient lookup
-    mapping (string => LandDetails[]) public landsByThramNumber;
-    mapping (string => LandDetails) public landsByPlotNumber;
-    mapping (address => LandDetails[]) public landsByOwner;
-    mapping (string => LandDetails[]) public landsByUserDid;
+    struct BasicLandInfo {
+        string thramNumber;
+        string plotNumber;
+        string location;
+        uint256 totalAreaInAcre;
+        uint256 totalAreaInDecimal;
+        uint256 availableAreaInAcre;
+        uint256 availableAreaInDecimal;
+        uint256 timestamp;
+        bool isVerified;
+        OwnershipType ownershipType;
+    }
 
-    // Events
+    address public immutable approver;
+    uint256 public totalLandsRegistered;
+
+    mapping(string => LandDetails[]) public landsByThramNumber;
+    mapping(string => LandDetails) public landsByPlotNumber;
+    mapping(address => LandDetails[]) public landsByOwner;
+    mapping(string => LandDetails[]) public landsByUserDid;
+
     event LandRegistered(
-        address indexed landOwnerAddress,
-        string indexed userDid,
         string indexed thramNumber,
-        string plotNumber,
-        string location,
+        string indexed plotNumber,
+        address[] owners,
+        string[] userDids,
         uint256 totalAreaInAcre,
         uint256 totalAreaInDecimal,
-        bool isVerified,
-        uint256 timestamp
+        OwnershipType ownershipType
     );
 
-    event LandVerified(string indexed thramNumber, string indexed plotNumber, bool isVerified);
+    event LandVerified(string indexed thramNumber, string indexed plotNumber);
     event LandFractionalized(string indexed plotNumber, uint256 acres, uint256 decimals);
 
     modifier onlyApprover() {
@@ -57,72 +71,125 @@ contract LandRegistry {
     }
 
     function registerLand(
-        string memory _thramNumber, 
-        string memory _plotNumber, 
-        string memory _location, 
-        uint256 _areaInAcre, 
-        uint256 _areaInDecimal, 
-        address _landOwnerAddress,
-        string memory _userDid
+        string memory _thramNumber,
+        string memory _plotNumber,
+        string memory _location,
+        uint256 _areaInAcre,
+        uint256 _areaInDecimal,
+        address[] memory _landOwnerAddresses,
+        string[] memory _userDids,
+        uint256[] memory _ownershipPercentages,
+        OwnershipType _ownershipType
     ) public onlyApprover {
-        require(_landOwnerAddress != address(0), "Invalid owner address");
+        require(_landOwnerAddresses.length == _userDids.length, "Addresses and DIDs length mismatch");
+        require(_landOwnerAddresses.length == _ownershipPercentages.length, "Addresses and percentages length mismatch");
+        require(_landOwnerAddresses.length > 0, "At least one owner required");
         require(bytes(_thramNumber).length > 0, "Thram number cannot be empty");
         require(bytes(_plotNumber).length > 0, "Plot number cannot be empty");
-        require(bytes(_userDid).length > 0, "User DID cannot be empty");
         require(_areaInAcre > 0 || _areaInDecimal > 0, "Area must be greater than zero");
-        require(landsByPlotNumber[_plotNumber].landOwnerAddress == address(0), "Plot number already registered");
+        require(landsByPlotNumber[_plotNumber].owners.length == 0, "Plot number already registered");
 
-        LandDetails memory newLand = LandDetails({
-            landOwnerAddress: _landOwnerAddress,
-            userDid: _userDid,
-            thramNumber: _thramNumber,
-            plotNumber: _plotNumber,
-            location: _location,
-            totalAreaInAcre: _areaInAcre,
-            totalAreaInDecimal: _areaInDecimal,
-            availableAreaInAcre: _areaInAcre,
-            availableAreaInDecimal: _areaInDecimal,
-            timestamp: block.timestamp,
-            isVerified: false
-        });
+        uint256 totalPercentage;
+        for (uint i = 0; i < _ownershipPercentages.length; i++) {
+            require(_landOwnerAddresses[i] != address(0), "Invalid owner address");
+            require(bytes(_userDids[i]).length > 0, "User DID cannot be empty");
+            totalPercentage += _ownershipPercentages[i];
+        }
+        require(totalPercentage == 10000, "Ownership percentages must sum to 100%");
 
-        // Store the land details in all mappings
+        LandDetails storage newLand = landsByPlotNumber[_plotNumber];
+
+        newLand.thramNumber = _thramNumber;
+        newLand.plotNumber = _plotNumber;
+        newLand.location = _location;
+        newLand.totalAreaInAcre = _areaInAcre;
+        newLand.totalAreaInDecimal = _areaInDecimal;
+        newLand.availableAreaInAcre = _areaInAcre;
+        newLand.availableAreaInDecimal = _areaInDecimal;
+        newLand.timestamp = block.timestamp;
+        newLand.isVerified = false;
+        newLand.ownershipType = _ownershipType;
+
+        for (uint i = 0; i < _landOwnerAddresses.length; i++) {
+            newLand.owners.push(OwnerInfo({
+                ownerAddress: _landOwnerAddresses[i],
+                userDid: _userDids[i],
+                ownershipPercentage: _ownershipPercentages[i]
+            }));
+        }
+
         landsByThramNumber[_thramNumber].push(newLand);
-        landsByPlotNumber[_plotNumber] = newLand;
-        landsByOwner[_landOwnerAddress].push(newLand);
-        landsByUserDid[_userDid].push(newLand);
+
+        for (uint i = 0; i < _landOwnerAddresses.length; i++) {
+            landsByOwner[_landOwnerAddresses[i]].push(newLand);
+            landsByUserDid[_userDids[i]].push(newLand);
+        }
+
+        totalLandsRegistered++;
 
         emit LandRegistered(
-            _landOwnerAddress, 
-            _userDid,
-            _thramNumber, 
-            _plotNumber, 
-            _location, 
-            _areaInAcre, 
-            _areaInDecimal, 
-            false, 
-            block.timestamp
+            _thramNumber,
+            _plotNumber,
+            _landOwnerAddresses,
+            _userDids,
+            _areaInAcre,
+            _areaInDecimal,
+            _ownershipType
         );
     }
 
-    function verifyLand(string memory _thramNumber, string memory _plotNumber) public onlyApprover {
-        LandDetails storage landByPlot = landsByPlotNumber[_plotNumber];
-        
-        require(landByPlot.landOwnerAddress != address(0), "Land not found by plot number");
-        require(keccak256(bytes(landByPlot.thramNumber)) == keccak256(bytes(_thramNumber)), 
-            "Plot number doesn't belong to this thram");
+    function getPlotsByThramNumber(string memory _thramNumber) public view returns (LandDetails[] memory) {
+        return landsByThramNumber[_thramNumber];
+    }
 
-        landByPlot.isVerified = true;
-        
-        // Update verification status in all mappings
-        for (uint i = 0; i < landsByThramNumber[_thramNumber].length; i++) {
-            if (keccak256(bytes(landsByThramNumber[_thramNumber][i].plotNumber)) == keccak256(bytes(_plotNumber))) {
-                landsByThramNumber[_thramNumber][i].isVerified = true;
-                break;
-            }
+    function getLandOwnersByPlotNumber(string memory _plotNumber) public view returns (
+        address[] memory ownerAddresses,
+        string[] memory userDids
+    ) {
+        LandDetails storage land = landsByPlotNumber[_plotNumber];
+        require(land.owners.length > 0, "Land not found");
+
+        ownerAddresses = new address[](land.owners.length);
+        userDids = new string[](land.owners.length);
+
+        for (uint i = 0; i < land.owners.length; i++) {
+            ownerAddresses[i] = land.owners[i].ownerAddress;
+            userDids[i] = land.owners[i].userDid;
         }
-        
-        emit LandVerified(_thramNumber, _plotNumber, true);
+    }
+
+    function getLandInfoByPlotNumber(string memory _plotNumber) public view returns (BasicLandInfo memory) {
+        LandDetails storage land = landsByPlotNumber[_plotNumber];
+        require(land.owners.length > 0, "Land not found");
+
+        return BasicLandInfo({
+            thramNumber: land.thramNumber,
+            plotNumber: land.plotNumber,
+            location: land.location,
+            totalAreaInAcre: land.totalAreaInAcre,
+            totalAreaInDecimal: land.totalAreaInDecimal,
+            availableAreaInAcre: land.availableAreaInAcre,
+            availableAreaInDecimal: land.availableAreaInDecimal,
+            timestamp: land.timestamp,
+            isVerified: land.isVerified,
+            ownershipType: land.ownershipType
+        });
+    }
+
+    function getLandByPlotNumber(string memory _plotNumber) public view returns (LandDetails memory) {
+        LandDetails storage land = landsByPlotNumber[_plotNumber];
+        require(land.owners.length > 0, "Land not found");
+        return land;
+    }
+
+    function verifyLand(string memory _thramNumber, string memory _plotNumber) public onlyApprover {
+        LandDetails storage land = landsByPlotNumber[_plotNumber];
+        require(land.owners.length > 0, "Land not found");
+        require(keccak256(bytes(land.thramNumber)) == keccak256(bytes(_thramNumber)),
+            "Plot doesn't belong to this thram");
+
+        land.isVerified = true;
+        emit LandVerified(_thramNumber, _plotNumber);
     }
 
     function fractionalizeLand(
@@ -131,7 +198,7 @@ contract LandRegistry {
         uint256 _decimalsToFractionalize
     ) public onlyApprover {
         LandDetails storage land = landsByPlotNumber[_plotNumber];
-        require(land.landOwnerAddress != address(0), "Land not found");
+        require(land.owners.length > 0, "Land not found");
         require(
             _acresToFractionalize <= land.availableAreaInAcre &&
             _decimalsToFractionalize <= land.availableAreaInDecimal,
@@ -140,28 +207,6 @@ contract LandRegistry {
 
         land.availableAreaInAcre -= _acresToFractionalize;
         land.availableAreaInDecimal -= _decimalsToFractionalize;
-
         emit LandFractionalized(_plotNumber, _acresToFractionalize, _decimalsToFractionalize);
-    }
-
-    function getPlotsByThramNumber(string memory _thramNumber) public view returns (LandDetails[] memory) {
-        require(landsByThramNumber[_thramNumber].length > 0, "No plots found for this thram number");
-        return landsByThramNumber[_thramNumber];
-    }
-
-    function getLandByPlotNumber(string memory _plotNumber) public view returns (LandDetails memory) {
-        LandDetails memory land = landsByPlotNumber[_plotNumber];
-        require(land.landOwnerAddress != address(0), "Land not found");
-        return land;
-    }
-
-    function getLandsByUserDid(string memory _userDid) public view returns (LandDetails[] memory) {
-        require(bytes(_userDid).length > 0, "User DID cannot be empty");
-        require(landsByUserDid[_userDid].length > 0, "No lands found for this user DID");
-        return landsByUserDid[_userDid];
-    }
-
-    function getLandsByOwner(address _owner) public view returns (LandDetails[] memory) {
-        return landsByOwner[_owner];
     }
 }
