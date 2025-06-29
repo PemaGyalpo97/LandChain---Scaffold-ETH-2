@@ -7,7 +7,7 @@ import "hardhat/console.sol";
 contract LandRegistry {
     // State Variables
     address public immutable approver;
-    address public owner;
+    // address public owner;
     
     // Define a struct to hold the land details
     struct LandDetails {
