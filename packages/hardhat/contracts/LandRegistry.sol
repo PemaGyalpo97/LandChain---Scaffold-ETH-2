@@ -3,15 +3,29 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/**
+ * @title Land Registry Contract
+ * @author [Your Name]
+ * @notice This contract registers and stores land information
+ */
 contract LandRegistry is Ownable {
+    /**
+     * @dev Enum for ownership types
+     */
     enum OwnershipType { SINGLE, JOINT, HOUSEHOLD_HEAD }
 
+    /**
+     * @dev Struct for owner information
+     */
     struct OwnerInfo {
         address ownerAddress;
         string userDid;
         uint256 ownershipPercentage;
     }
 
+    /**
+     * @dev Struct for land details
+     */
     struct LandDetails {
         OwnerInfo[] owners;
         string thramNumber;
@@ -26,6 +40,9 @@ contract LandRegistry is Ownable {
         OwnershipType ownershipType;
     }
 
+    /**
+     * @dev Struct for basic land information
+     */
     struct BasicLandInfo {
         string thramNumber;
         string plotNumber;
@@ -39,14 +56,39 @@ contract LandRegistry is Ownable {
         OwnershipType ownershipType;
     }
 
+    /**
+     * @dev Address of the approver
+     */
     address public immutable approver;
+
+    /**
+     * @dev Total number of lands registered
+     */
     uint256 public totalLandsRegistered;
 
+    /**
+     * @dev Mapping of lands by thram number
+     */
     mapping(string => LandDetails[]) public landsByThramNumber;
+
+    /**
+     * @dev Mapping of lands by plot number
+     */
     mapping(string => LandDetails) public landsByPlotNumber;
+
+    /**
+     * @dev Mapping of lands by owner
+     */
     mapping(address => LandDetails[]) public landsByOwner;
+
+    /**
+     * @dev Mapping of lands by user DID
+     */
     mapping(string => LandDetails[]) public landsByUserDid;
 
+    /**
+     * @dev Event emitted when a land is registered
+     */
     event LandRegistered(
         string indexed thramNumber,
         string indexed plotNumber,
@@ -57,19 +99,45 @@ contract LandRegistry is Ownable {
         OwnershipType ownershipType
     );
 
+    /**
+     * @dev Event emitted when a land is verified
+     */
     event LandVerified(string indexed thramNumber, string indexed plotNumber);
+
+    /**
+     * @dev Event emitted when a land is fractionalized
+     */
     event LandFractionalized(string indexed plotNumber, uint256 acres, uint256 decimals);
 
+    /**
+     * @dev Modifier to restrict access to the approver
+     */
     modifier onlyApprover() {
         require(msg.sender == approver, "Caller is not the approver");
         _;
     }
 
+    /**
+     * @dev Constructor to initialize the approver
+     * @param _approver Address of the approver
+     */
     constructor(address _approver) {
         require(_approver != address(0), "Invalid approver address");
         approver = _approver;
     }
 
+    /**
+     * @dev Function to register a land
+     * @param _thramNumber Thram number of the land
+     * @param _plotNumber Plot number of the land
+     * @param _location Location of the land
+     * @param _areaInAcre Area of the land in acres
+     * @param _areaInDecimal Area of the land in decimals
+     * @param _landOwnerAddresses Addresses of the land owners
+     * @param _userDids User DIDs of the land owners
+     * @param _ownershipPercentages Ownership percentages of the land owners
+     * @param _ownershipType Ownership type of the land
+     */
     function registerLand(
         string memory _thramNumber,
         string memory _plotNumber,
@@ -138,10 +206,21 @@ contract LandRegistry is Ownable {
         );
     }
 
+    /**
+     * @dev Function to get all plots by thram number
+     * @param _thramNumber Thram number to search for
+     * @return Array of land details
+     */
     function getPlotsByThramNumber(string memory _thramNumber) public view returns (LandDetails[] memory) {
         return landsByThramNumber[_thramNumber];
     }
 
+    /**
+    * @dev Function to get all land owners by plot number
+    * @param _plotNumber Plot number to search for
+    * @return ownerAddresses Array of owner addresses
+    * @return userDids Array of user DIDs
+    */
     function getLandOwnersByPlotNumber(string memory _plotNumber) public view returns (
         address[] memory ownerAddresses,
         string[] memory userDids
@@ -158,6 +237,11 @@ contract LandRegistry is Ownable {
         }
     }
 
+    /**
+     * @dev Function to get basic land information by plot number
+     * @param _plotNumber Plot number to search for
+     * @return Basic land information
+     */
     function getLandInfoByPlotNumber(string memory _plotNumber) public view returns (BasicLandInfo memory) {
         LandDetails storage land = landsByPlotNumber[_plotNumber];
         require(land.owners.length > 0, "Land not found");
@@ -176,12 +260,18 @@ contract LandRegistry is Ownable {
         });
     }
 
+    /**
+     * @dev Function to get full land information by plot number
+     * @param _plotNumber Plot number to search for
+     * @return Full land information
+     */
     function getLandByPlotNumber(string memory _plotNumber) public view returns (LandDetails memory) {
         LandDetails storage land = landsByPlotNumber[_plotNumber];
         require(land.owners.length > 0, "Land not found");
         return land;
     }
 
+    /// @dev Function to verify a land
     function verifyLand(string memory _thramNumber, string memory _plotNumber) public onlyApprover {
         LandDetails storage land = landsByPlotNumber[_plotNumber];
         require(land.owners.length > 0, "Land not found");
@@ -192,6 +282,7 @@ contract LandRegistry is Ownable {
         emit LandVerified(_thramNumber, _plotNumber);
     }
 
+    /// @dev Function to fractionalize a land
     function fractionalizeLand(
         string memory _plotNumber,
         uint256 _acresToFractionalize,

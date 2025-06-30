@@ -1,25 +1,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+/// @title LandNFT
+/// @Author: Pema Gyalpo
+/// @dev This contract represents the NFT for land sales.
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./LandRegistry.sol";
 import "./OwnershipCheck.sol";
 
+/// @dev This contract represents the NFT for land sales.
 contract LandNFT is OwnershipCheck, Ownable {
+    
+    /// @dev Counter for generating unique token ids
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
     LandRegistry public landRegistry;
 
+    /// @dev Different types of land
     enum TokenType { THRAM, PLOT, FRACTION }
 
+    /// @dev Owner information
     struct OwnerInfo {
         address ownerAddress;
         string userDid;
         uint256 ownershipPercentage;
     }
 
+    /// @dev Land details
     struct LandToken {
         uint256 tokenId;
         TokenType tokenType;
@@ -31,10 +40,20 @@ contract LandNFT is OwnershipCheck, Ownable {
         uint256 creationTime;
     }
 
+    /// @dev Mapping from tokenId to LandToken
     mapping(uint256 => LandToken) private _landTokens;
     mapping(string => uint256[]) private _tokenIdsByThram;
     mapping(string => uint256[]) private _tokenIdsByPlot;
 
+    /// @dev Event emitted when a land token is created
+    /// @param tokenId The unique id of the token
+    /// @param tokenType The type of the token (thram, plot or fraction)
+    /// @param thramNumber The thram number of the plot
+    /// @param plotNumber The plot number of the land
+    /// @param acres The area of the land in acres
+    /// @param decimals The area of the land in decimal (after the decimal point)
+    /// @param owners The owners of the land
+    /// @param ownershipPercentages The percentage of each owner
     event LandTokenized(
         uint256 indexed tokenId,
         TokenType tokenType,
@@ -46,10 +65,12 @@ contract LandNFT is OwnershipCheck, Ownable {
         uint256[] ownershipPercentages
     );
 
+    /// @dev Constructor for LandNFT
     constructor(address _landRegistry) OwnershipCheck("LandNFT", "LNFT") {
         landRegistry = LandRegistry(_landRegistry);
     }
 
+    /// @dev Function to mint a thram token
     function mintThramToken(
         string memory _thramNumber,
         address[] memory _owners,
@@ -84,6 +105,7 @@ contract LandNFT is OwnershipCheck, Ownable {
         _tokenIdsByThram[_thramNumber].push(tokenId);
     }
 
+    /// @dev Function to mint a plot token
     function mintPlotToken(
         string memory _plotNumber,
         address[] memory _owners,
@@ -119,6 +141,7 @@ contract LandNFT is OwnershipCheck, Ownable {
         _tokenIdsByPlot[_plotNumber].push(tokenId);
     }
 
+    /// @dev Function to mint a fraction token
     function mintFractionToken(
         string memory _plotNumber,
         uint256 _acres,
@@ -163,6 +186,7 @@ contract LandNFT is OwnershipCheck, Ownable {
         landRegistry.fractionalizeLand(_plotNumber, _acres, _decimals);
     }
 
+    /// @dev Function to mint a token
     function _mintToken(uint256 tokenId, LandToken storage tokenData) private {
         for (uint i = 0; i < tokenData.owners.length; i++) {
             _safeMint(tokenData.owners[i].ownerAddress, tokenId);
@@ -187,6 +211,7 @@ contract LandNFT is OwnershipCheck, Ownable {
         );
     }
 
+    /// @dev Function to get token details
     function getToken(uint256 tokenId) public view returns (
         uint256,
         TokenType,
@@ -226,10 +251,12 @@ contract LandNFT is OwnershipCheck, Ownable {
         );
     }
 
+    /// @dev Function to get tokens by thram
     function getTokensByThram(string memory _thramNumber) public view returns (uint256[] memory) {
         return _tokenIdsByThram[_thramNumber];
     }
 
+    /// @dev Function to get tokens by plot
     function getTokensByPlot(string memory _plotNumber) public view returns (uint256[] memory) {
         return _tokenIdsByPlot[_plotNumber];
     }
